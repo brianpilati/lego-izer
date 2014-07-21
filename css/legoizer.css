@@ -1,15 +1,15 @@
 #background {
     height: 100%;
     width: 100%;
-    background: #000;
+    background: #FFF;
 }
 
 #canvas {
-    position: relative;
-    margin-left: auto;
-    margin-right: auto;
-    height: 300px;
-    width: 400px;
+    position: absolute;
+    left: 250px;
+    height: 600px;
+    width: 800px;
     top: 250px;
     background: white;
+    z-index: 1;
 }
