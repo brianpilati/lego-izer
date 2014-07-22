@@ -4,7 +4,7 @@
     background: #FFF;
 }
 
-#canvas {
+#legoCanvas {
     position: absolute;
     left: 250px;
     height: 600px;

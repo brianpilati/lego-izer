@@ -35,12 +35,12 @@ Legoizer.prototype = {
             lastBrickWidth += parseInt(brickWidth);
             if(lastBrickWidth >= this.__width) {
                 if (offset) {
-                    lastBrickWidth = 0 - brickWidth / 2;
-                    offset = false
+                    console.log(brick.getStudWidth());
+                    lastBrickWidth = 0 - brick.getStudWidth();
                 } else {
                     lastBrickWidth = 0;
-                    offset = true 
                 }
+                offset = !offset;
                 lastBrickHeight += parseInt(brick.getBrickHeight());
             }
             if (lastBrickHeight > this.__height) {
@@ -65,7 +65,7 @@ Legoizer.prototype = {
 
         if (this.__currentBrick >= this.__bricks.length) {
             clearInterval(this.__interval);
-            $( "#canvas" ).fadeOut( 2000, function() {
+            this.__element.fadeOut( 2000, function() {
                 console.log('all clear');
             });
         }
@@ -197,7 +197,11 @@ Brick.prototype = {
 
     getBrickWidth: function() {
         return 8 * this.__studs * this.__multiplier;
+    },
+
+    getStudWidth: function() {
+        return 8 * this.__multiplier;
     }
 }
 
-new Legoizer('canvas', {plates: 3});
+new Legoizer('legoCanvas', {plates: 3});
