@@ -7,9 +7,9 @@
 #legoCanvas {
     position: absolute;
     left: 250px;
-    height: 600px;
-    width: 800px;
-    top: 250px;
+    height: 900px;
+    width: 1120px;
+    top: 050px;
     background: white;
     z-index: 1;
 }

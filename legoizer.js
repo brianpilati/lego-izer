@@ -1,21 +1,55 @@
-function Legoizer(element, brickObject) {
+function Legoizer(element, brickObject, design) {
+    console.log(design);
     init: {
-        this.__createVariables(element, brickObject);
+        this.__createVariables(element, brickObject, design);
     }
 }
 
 Legoizer.prototype = {
-    __createVariables: function(element, brickObject) {
+    __createVariables: function(element, brickObject, design) {
         this.__element = $('#' + element);
         this.__getElementSize();
         this.__ctx = this.__createCanvas();
         this.__bricks = [];
-        this.__buildBricks(brickObject);
+        if (design) {
+           this.__buildCharacterBricks(brickObject, design);
+        } else {
+            this.__buildRandomBricks(brickObject);
+        }
         this.__currentBrick = 0;
         this.__animate();
     },
 
-    __buildBricks: function(brickObject) {
+    __buildCharacterBricks: function(brickObject, design) {
+        var lastBrickHeight = 0;
+        var lastBrickWidth = 0;
+        var self = this;
+        brickObject.studs = 2;
+        for(index = design.length - 1; index >= 0; index--) {
+            var bricks = (design[index]).split(/\s/); 
+            $.each(bricks, function(index, brickColor) {
+                brickObject.color = brickColor;
+                var brick = new Brick(
+                    self.__ctx, 
+                    brickObject, 
+                    {
+                        width: lastBrickWidth, 
+                        height: parseInt(self.__height - lastBrickHeight)
+                    }
+                );
+                var brickWidth = brick.getBrickWidth();
+                lastBrickWidth += parseInt(brickWidth);
+                if(lastBrickWidth >= self.__width) {
+                    lastBrickWidth = 0;
+                    lastBrickHeight += parseInt(brick.getBrickHeight());
+                }
+                self.__bricks.push(brick);
+            });
+
+        };
+    },
+
+    __buildRandomBricks: function(brickObject) {
         var lastBrickHeight = 0;
         var lastBrickWidth = 0;
         var buildWall = true;
@@ -35,7 +69,6 @@ Legoizer.prototype = {
             lastBrickWidth += parseInt(brickWidth);
             if(lastBrickWidth >= this.__width) {
                 if (offset) {
-                    console.log(brick.getStudWidth());
                     lastBrickWidth = 0 - brick.getStudWidth();
                 } else {
                     lastBrickWidth = 0;
@@ -103,14 +136,13 @@ function Brick(ctx, brickObject, position) {
 Brick.prototype = {
     __createVariables: function(ctx, brickObject, position) {
         this.__plates = brickObject.plates;
-        this.__color = brickObject.color;
+        this.__color = this.__determineColor(brickObject.color);
+        this.__studs = brickObject.studs || this.__determineStuds();
         this.__multiplier = 5;
         this.__ctx = ctx;
         this.__height = 0;
         this.__maxHeight = position.height;
         this.__width = position.width;
-        this.__determineColor();
-        this.__determineStuds();
     },
 
     draw: function() {
@@ -161,22 +193,22 @@ Brick.prototype = {
             16 
         ];
         var studIndex = Math.floor((Math.random() * studs.length));
-        this.__studs = studs[studIndex];
+        return studs[studIndex];
     },
 
-    __determineColor: function() {
+    __determineColor: function(brickColor) {
         var colors = [
+            'grey',
+            'blue',
+            'black',
             'yellow',
             'red',
-            'blue',
             'green',
-            'black',
-            'grey',
             'lightgrey',
             'darkgrey'
         ];
         var colorIndex = Math.floor((Math.random() * colors.length));
-        this.__color = colors[colorIndex];
+        return colors[brickColor || colorIndex];
     },
 
     __getStudHeight: function() {
@@ -204,4 +236,49 @@ Brick.prototype = {
     }
 }
 
+var $boat = [
+    '0 0 0 0 0 0 3 3 0 0 0 0 0 0',
+    '0 0 0 0 0 0 3 3 0 0 0 0 0 0',
+    '0 0 0 0 0 1 1 1 1 0 0 0 0 0',
+    '0 0 0 0 0 1 1 1 1 0 0 0 0 0',
+    '0 0 0 0 1 1 1 1 1 1 0 0 0 0',
+    '0 0 0 0 1 1 1 1 1 1 0 0 0 0',
+    '0 0 0 1 1 1 1 1 1 1 1 0 0 0',
+    '0 0 0 1 1 1 1 1 1 1 1 0 0 0',
+    '0 0 1 1 1 1 1 1 1 1 1 1 0 0',
+    '0 0 1 1 1 1 1 1 1 1 1 1 0 0',
+    '0 1 1 1 1 1 1 1 1 1 1 1 1 0',
+    '0 1 1 1 1 1 1 1 1 1 1 1 1 0',
+    '0 0 0 0 0 0 1 1 0 0 0 0 0 0',
+    '2 2 2 2 2 2 2 2 2 2 2 2 2 2',
+    '0 2 2 2 2 2 2 2 2 2 2 2 2 0',
+    '0 0 2 2 2 2 2 2 2 2 2 2 0 0',
+    '0 0 0 2 2 2 2 2 2 2 2 0 0 0',
+    '0 0 0 2 2 2 2 2 2 2 2 0 0 0'
+];
+
+var $elephant = [
+    '0 0 0 0 0 0 0 0 0 0 0 0 0 0',
+    '0 0 0 0 0 0 0 0 0 0 0 0 0 0',
+    '0 0 0 0 0 0 0 0 0 0 0 0 0 0',
+    '0 0 0 0 0 0 0 0 0 0 0 0 0 0',
+    '0 0 0 0 0 0 0 0 0 0 0 0 0 0',
+    '0 0 0 0 1 1 0 0 0 0 0 0 0 0',
+    '0 0 0 1 0 0 1 0 0 0 0 0 0 0',
+    '0 1 1 1 1 1 1 1 1 1 0 0 0 0',
+    '1 0 0 0 0 0 1 0 0 0 1 0 0 0',
+    '1 0 2 0 0 1 0 0 0 0 0 1 1 0',
+    '1 1 0 0 1 0 0 0 0 0 0 1 0 1',
+    '1 0 1 0 0 0 0 0 0 0 0 1 0 1',
+    '1 0 1 0 0 0 0 0 0 0 0 1 0 1',
+    '1 0 1 0 0 0 0 0 0 0 0 1 0 0',
+    '0 1 0 1 1 0 0 0 0 1 1 0 0 0',
+    '0 0 0 1 1 1 1 1 1 1 1 0 0 0',
+    '0 0 0 1 1 0 0 0 0 1 1 0 0 0',
+    '0 0 0 1 1 0 0 0 0 1 1 0 0 0'
+];
+
+//new Legoizer('legoCanvas', {plates: 3}, $elephant);
+//new Legoizer('legoCanvas', {plates: 3}, $boat);
 new Legoizer('legoCanvas', {plates: 3});
+
